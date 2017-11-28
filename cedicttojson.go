@@ -263,7 +263,7 @@ func readLine(path string) {
 
 	}
 	fmt.Println("Getting ready to write file")
-	pagesJson, err := json.Marshal(newdb)
+	pagesJson, err := json.MarshalIndent(newdb,"","    ")
 	if err != nil {
 		fmt.Println("Error")
 		 return
