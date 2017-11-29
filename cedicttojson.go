@@ -63,10 +63,14 @@ func createToneMarks(numberedPinyin string)string{
 	// There are no Mandarin syllables in Hanyu Pinyin that contain both a and e.
 	for pos, word := range words{
 
-		if(strings.Contains(word,"a") || strings.Contains(word,"e")){
+		if(strings.Contains(word,"a") || strings.Contains(word,"e") || strings.Contains(word,"A") || strings.Contains(word,"E")){
 				strs := "a"
 			if(strings.Contains(word,"e")){
 				strs = "e"
+			}else if(strings.Contains(word,"E")){
+				strs = "E"
+			}else if(strings.Contains(word,"A")){
+				strs = "A"
 			}
 			var toneval = detectTone(word)
 			if(toneval != 0){
@@ -86,12 +90,18 @@ func createToneMarks(numberedPinyin string)string{
 	//In the combination ou, o takes the mark. So lets replace it
 	for pos,word :=range words{
 
-		if ( !strings.Contains(word,"a") && !strings.Contains(word,"e") && strings.Contains(word,"ou") ) {
+		if ( !strings.Contains(word,"a") && !strings.Contains(word,"e") && (strings.Contains(word,"ou") || strings.Contains(word,"Ou") )) {
 			var toneval = detectTone(word)
-			if(toneval != 0){
+			var rps = "o"
+			if strings.Contains(word,"Ou"){
+				rps = "Ou"
+			}
+			if(toneval != 0 && rps == "ou"){
 				word = strings.Replace(word,"o",otones[toneval-1],-1)
 				
 
+			}else if toneval != 0 && rps == "Ou"{
+				word = strings.Replace(word,"O",otones[toneval-1],-1)
 			}
 			word = strings.Replace(word,strconv.Itoa(toneval),"",-1)
 			//fmt.Println("Found ou lets print out the fixed word!")
@@ -110,7 +120,7 @@ func createToneMarks(numberedPinyin string)string{
 			vowelToReplace := ""
 			voweExist := false;
 			var toneval = detectTone(word)
-			if ( !strings.Contains(word,"a") && !strings.Contains(word,"e") && !strings.Contains(word,"ou") ) {
+			if ( !strings.Contains(word,"a") && !strings.Contains(word,"e") && !strings.Contains(word,"ou") && !strings.Contains(word,"Ou") && !strings.Contains(word,"A") && !strings.Contains(word,"E") ) {
 
 
 			for wordpos, char := range word {
