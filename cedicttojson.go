@@ -262,6 +262,19 @@ func readLine(path string) {
 			string(Definition)}
 
 		if !iscomment {
+			//definitionPinyin := strings.TrimLeft(strings.TrimRight(hskstruct.Definition, "]"), "[")
+			initial := hskstruct.Definition
+			middle := GetStringInBetween(initial, "[", "]")
+			if middle != "" {
+				// fmt.Println("Output is below")
+				// fmt.Println(middle)
+				converted := createToneMarks(middle)
+				// fmt.Println("Output converted is below")
+				// fmt.Println(converted)
+				result := strings.Replace(hskstruct.Definition, middle, converted, 1)
+				//fmt.Println("Replace : ", result)
+				hskstruct.Definition = result
+			}
 			newdb = append(newdb, hskstruct)
 		}
 
@@ -275,6 +288,24 @@ func readLine(path string) {
 
 	ioutil.WriteFile("./cedict.json", pagesJson, 0644)
 }
+func GetStringInBetween(str string, start string, end string) (result string) {
+	s := strings.Index(str, start)
+	//fmt.Println(str)
+	if s == -1 {
+		return str
+	}
+
+	s += len(start)
+	e := strings.Index(str, end)
+	if e == -1 {
+		fmt.Println("Error negative one")
+		return str
+	}
+
+	return str[s:e]
+}
+
+// func ReplaceStringInBetween()
 
 func main() {
 
