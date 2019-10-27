@@ -11,11 +11,11 @@ import (
 )
 
 type CEDICTDATA struct {
-	Traditional    string `bson:"Traditional" json:"Traditional"`
-	Simplified     string `bson:"Simplified" json:"Simplified"`
-	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
-	Pinyin         string `bson:"Pinyin" json:"Pinyin"`
-	Definition     string `bson:"Definition" json:"Definition"`
+	Traditional    string   `bson:"Traditional" json:"Traditional"`
+	Simplified     string   `bson:"Simplified" json:"Simplified"`
+	PinyinNumbered string   `bson:"PinyinNumbered" json:"PinyinNumbered"`
+	Pinyin         string   `bson:"Pinyin" json:"Pinyin"`
+	Definition     []string `bson:"Definition" json:"Definition"`
 }
 
 func replaceAtIndex(input string, index int, replacement string) string {
@@ -200,7 +200,7 @@ func readLine(path string) {
 		var SimplifiedCharacters []rune
 		var Pinyin []rune
 		var Definition []rune
-
+		var DefinitionList []string
 		runes := []rune(scanner.Text())
 		var spaces = 0
 		var leftbracket = 0
@@ -240,8 +240,9 @@ func readLine(path string) {
 
 			if slashCount > 0 && spaces > 0 && leftbracket > 0 {
 				if currentChar == "/" {
-					trune := rune(';')
-					Definition = append(Definition, trune)
+					//trune := rune(';')
+					DefinitionList = append(DefinitionList, string(Definition))
+					Definition = nil
 				} else {
 					Definition = append(Definition, character)
 				}
@@ -259,28 +260,31 @@ func readLine(path string) {
 			string(SimplifiedCharacters),
 			string(Pinyin),
 			createToneMarks(string(Pinyin)),
-			string(Definition)}
+			DefinitionList}
 
 		if !iscomment {
 			//definitionPinyin := strings.TrimLeft(strings.TrimRight(hskstruct.Definition, "]"), "[")
-			initial := hskstruct.Definition
-			middle := GetStringInBetween(initial, "[", "]")
-			if middle != "" {
-				// fmt.Println("Output is below")
-				// fmt.Println(middle)
-				converted := createToneMarks(middle)
-				// fmt.Println("Output converted is below")
-				// fmt.Println(converted)
-				result := strings.Replace(hskstruct.Definition, middle, converted, 1)
-				//fmt.Println("Replace : ", result)
-				hskstruct.Definition = result
+			for index, element := range hskstruct.Definition {
+				initial := element
+				middle := GetStringInBetween(initial, "[", "]")
+				if middle != "" {
+					// fmt.Println("Output is below")
+					// fmt.Println(middle)
+					converted := createToneMarks(middle)
+					// fmt.Println("Output converted is below")
+					// fmt.Println(converted)
+					result := strings.Replace(element, middle, converted, 1)
+					//fmt.Println("Replace : ", result)
+					hskstruct.Definition[index] = result
+				}
+
 			}
 			newdb = append(newdb, hskstruct)
 		}
 
 	}
 	fmt.Println("Getting ready to write file")
-	pagesJson, err := json.MarshalIndent(newdb, "", "    ")
+	pagesJson, err := json.MarshalIndent(newdb,"", "  ")
 	if err != nil {
 		fmt.Println("Error")
 		return
