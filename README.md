@@ -20,7 +20,7 @@ Will be converted to
                  "Simplified": "你好",
                  "PinyinNumbered": "ni3 hao3",
                  "Pinyin": "nǐ hǎo",
-                 "Definition": "Hello!;Hi!;How are you?;"
+                 "Definition": ["Hello!,Hi!,How are you?]"
              },
 
 
